@@ -165,13 +165,11 @@ func (root *Tree) Insert(item Item) bool {
 
 			n = n.left
 			grandparent, uncle = getGU(n)
-			//continue
 		} else {
 			if n.isLeftChild() && n.parent.isRightChild() {
 				root.rotateRight(n.parent)
 				n = n.right
 				grandparent, uncle = getGU(n)
-				//continue
 			}
 		}
 
@@ -703,30 +701,6 @@ func (root *Tree) rotateLeft(n *node) {
 	}
 	r.left = n
 	n.parent = r
-
-	/*
-		y := x.right
-		if y == nil {
-			root.Dump()
-			panic("about to crash b/c y is nil")
-		}
-		x.right = y.left
-		if y.left != nil {
-			y.left.parent = x
-		}
-		y.parent = x.parent
-		if x.parent == nil {
-			root.root = y
-		} else {
-			if x.isLeftChild() {
-				x.parent.left = y
-			} else {
-				x.parent.right = y
-			}
-		}
-		y.left = x
-		x.parent = y
-	*/
 }
 
 /*
