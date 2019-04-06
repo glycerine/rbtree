@@ -122,14 +122,29 @@ func getGU(n *node) (grandparent, uncle *node) {
 }
 
 // Insert an item. If the item is already in the tree, do nothing and
-// return false. Else return true.
-func (root *Tree) Insert(item Item) bool {
+// return false.
+func (root *Tree) Insert(item Item) (added bool) {
+	added, _ = root.InsertGetIt(item)
+	return
+}
+
+// InsertGetIt tries to add  an item to the tree and return
+// an Iterator pointing to it.
+// If the item is already in the tree, do nothing and
+// return false (it.root and it.node will be nil). Else return true,
+// and Iterator 'it' refers to the just inserted element.
+func (root *Tree) InsertGetIt(item Item) (added bool, it Iterator) {
 
 	// TODO: delay creating n until it is found to be inserted
-	n := root.doInsert(item)
-	if n == nil {
-		return false
+	already, n := root.doInsert(item)
+	if already {
+		added = false
+		it.root = root
+		it.node = n
+		return
 	}
+	it.root = root
+	it.node = n
 
 	n.color = red
 	var uncle, grandparent *node
@@ -188,7 +203,8 @@ func (root *Tree) Insert(item Item) bool {
 		}
 		break
 	}
-	return true
+	added = true
+	return
 }
 
 // Delete an item with the given key. Return true iff the item was
@@ -427,39 +443,43 @@ func (root *Tree) maybeSetMaxNode(n *node) {
 	}
 }
 
-// Try inserting "item" into the tree. Return nil if the item is
-// already in the tree. Otherwise return a new (leaf) node.
-func (root *Tree) doInsert(item Item) *node {
+// Try inserting "item" into the tree.
+// Return already true and
+// the node if the item is
+// already in the tree.
+// Otherwise return already false and the
+// new (leaf) node that holds item.
+func (root *Tree) doInsert(item Item) (already bool, n *node) {
 	if root.root == nil {
-		n := &node{item: item}
+		n = &node{item: item}
 		root.root = n
 		root.minNode = n
 		root.maxNode = n
 		root.count++
-		return n
+		return false, n
 	}
 	parent := root.root
 	for true {
 		comp := root.compare(item, parent.item)
 		if comp == 0 {
-			return nil
+			return true, parent
 		} else if comp < 0 {
 			if parent.left == nil {
-				n := &node{item: item, parent: parent}
+				n = &node{item: item, parent: parent}
 				parent.left = n
 				root.count++
 				root.maybeSetMinNode(n)
-				return n
+				return false, n
 			} else {
 				parent = parent.left
 			}
 		} else {
 			if parent.right == nil {
-				n := &node{item: item, parent: parent}
+				n = &node{item: item, parent: parent}
 				parent.right = n
 				root.count++
 				root.maybeSetMaxNode(n)
-				return n
+				return false, n
 			} else {
 				parent = parent.right
 			}
