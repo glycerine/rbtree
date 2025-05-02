@@ -6,7 +6,6 @@
 //
 // The implementation is inspired (read: stolen) from:
 // http://en.literateprograms.org/Red-black_tree_(C)#chunk use:private function prototypes.
-//
 package rbtree
 
 import (
@@ -92,6 +91,13 @@ func (root *Tree) NegativeLimit() Iterator {
 func (root *Tree) FindGE(key Item) Iterator {
 	n, _ := root.findGE(key)
 	return Iterator{root, n}
+}
+
+func (root *Tree) FindGE_isEqual(key Item) (it Iterator, exactlyEqual bool) {
+	var n *node
+	n, exactlyEqual = root.findGE(key)
+	it = Iterator{root, n}
+	return
 }
 
 // Find the largest element N such that N <= key, and return the
@@ -319,9 +325,7 @@ type node struct {
 
 var negativeLimitNode *node
 
-//
 // Internal node attribute accessors
-//
 func getColor(n *node) int {
 	if n == nil {
 		return black
@@ -703,11 +707,9 @@ func (root *Tree) replaceNode(oldn, newn *node) {
 	}
 }
 
-/*
-    X		     Y
-  A   Y	    => X   C
-     B C 	  A B
-*/
+// _   X               Y
+// _ A   Y        => X   C
+// _    B C         A B
 func (root *Tree) rotateLeft(n *node) {
 	r := n.right
 	root.replaceNode(n, r)
@@ -719,11 +721,9 @@ func (root *Tree) rotateLeft(n *node) {
 	n.parent = r
 }
 
-/*
-     Y           X
-   X   C  =>   A   Y
-  A B             B C
-*/
+// _    Y           X
+// _  X   C  =>   A   Y
+// _ A B             B C
 func (root *Tree) rotateRight(n *node) {
 	L := n.left
 	root.replaceNode(n, L)

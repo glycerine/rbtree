@@ -46,6 +46,22 @@ func TestFindGE(t *testing.T) {
 	testAssert(t, tree.FindGE(9).Item().(int) == 10, "FindGE 10")
 }
 
+func TestFindGE_isEqual(t *testing.T) {
+	tree := testNewIntSet()
+	testAssert(t, tree.Insert(10), "Insert1")
+	testAssert(t, !tree.Insert(10), "Insert2")
+	testAssert(t, tree.Len() == 1, "len==1")
+	it, exact := tree.FindGE_isEqual(10)
+	testAssert(t, it.Item().(int) == 10, "FindGE 10")
+	testAssert(t, exact, "FindGE 10 exact true")
+	it, exact = tree.FindGE_isEqual(11)
+	testAssert(t, it.Limit(), "FindGE 11")
+	testAssert(t, !exact, "FindGE 11 exact false")
+	it, exact = tree.FindGE_isEqual(9)
+	testAssert(t, it.Item().(int) == 10, "FindGE 9")
+	testAssert(t, !exact, "FindGE 9 exact false")
+}
+
 func TestFindLE(t *testing.T) {
 	tree := testNewIntSet()
 	testAssert(t, tree.Insert(10), "insert1")
@@ -81,7 +97,9 @@ func TestDelete(t *testing.T) {
 func iterToString(i Iterator) string {
 	s := ""
 	for ; !i.Limit(); i = i.Next() {
-		if s != "" { s = s + ","}
+		if s != "" {
+			s = s + ","
+		}
 		s = s + fmt.Sprintf("%d", i.Item().(int))
 	}
 	return s
@@ -90,7 +108,9 @@ func iterToString(i Iterator) string {
 func reverseIterToString(i Iterator) string {
 	s := ""
 	for ; !i.NegativeLimit(); i = i.Prev() {
-		if s != "" { s = s + ","}
+		if s != "" {
+			s = s + ","
+		}
 		s = s + fmt.Sprintf("%d", i.Item().(int))
 	}
 	return s
@@ -212,9 +232,7 @@ func (o *oracle) Delete(key int) bool {
 	return false
 }
 
-//
 // Test iterator
-//
 type oracleIterator struct {
 	o     *oracle
 	index int
@@ -233,7 +251,7 @@ func (oiter oracleIterator) NegativeLimit() bool {
 }
 
 func (oiter oracleIterator) Max() bool {
-	return oiter.index == len(oiter.o.data) - 1
+	return oiter.index == len(oiter.o.data)-1
 }
 
 func (oiter oracleIterator) Item() int {
@@ -348,7 +366,7 @@ func TestRandomized(t *testing.T) {
 // Examples
 //
 
-func ExampleIntString() {
+func Example() {
 	type MyItem struct {
 		key   int
 		value string
