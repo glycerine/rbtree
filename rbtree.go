@@ -47,6 +47,16 @@ func (root *Tree) Len() int {
 	return root.count
 }
 
+// DeleteAll deletes all content, returning
+// an empty tree with the without changing
+// the original comparison function.
+func (root *Tree) DeleteAll() {
+	root.root = nil
+	root.minNode = nil
+	root.maxNode = nil
+	root.count = 0
+}
+
 // A convenience function for finding an element equal to key. Return
 // nil if not found.
 func (root *Tree) Get(key Item) Item {

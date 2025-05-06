@@ -92,6 +92,14 @@ func TestDelete(t *testing.T) {
 	testAssert(t, !tree.DeleteWithKey(9), "del")
 	testAssert(t, tree.Len() == 1, "dellen")
 
+	tree.DeleteAll()
+	testAssert(t, tree.Len() == 0, "deleteAll")
+	testAssert(t, tree.Insert(1), "ins1")
+	testAssert(t, tree.Insert(2), "ins2")
+	testAssert(t, tree.Insert(3), "ins3")
+	testAssert(t, tree.Len() == 3, "deleteLen=3")
+	tree.DeleteAll()
+	testAssert(t, tree.Len() == 0, "deleteAll")
 }
 
 func iterToString(i Iterator) string {
