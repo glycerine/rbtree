@@ -95,7 +95,7 @@ func (root *Tree) NegativeLimit() Iterator {
 	return Iterator{root, negativeLimitNode}
 }
 
-// Find the smallest element N such that N >= key, and return the
+// Find the smallest element N such that N >= key, and return an
 // iterator pointing to the element. If no such element is found,
 // return root.Limit().
 func (root *Tree) FindGE(key Item) Iterator {
@@ -103,6 +103,11 @@ func (root *Tree) FindGE(key Item) Iterator {
 	return Iterator{root, n}
 }
 
+// FindGE_isEqual finds the smallest element N such
+// that N >= key, and returns an
+// iterator pointing to the element. If no such element is found,
+// return root.Limit(). The returned exactlyEqual indicates
+// if key itself was found.
 func (root *Tree) FindGE_isEqual(key Item) (it Iterator, exactlyEqual bool) {
 	var n *node
 	n, exactlyEqual = root.findGE(key)
@@ -125,6 +130,26 @@ func (root *Tree) FindLE(key Item) Iterator {
 		return Iterator{root, negativeLimitNode}
 	}
 	return Iterator{root, root.maxNode}
+}
+
+// FindLE_isEqual finds the largest element N such
+// that N <= key, and returns the
+// iterator pointing to the element. If no such element is found,
+// return root.NegativeLimit(). The returned exactlyEqual indicates
+// if key itself was found.
+func (root *Tree) FindLE_isEqual(key Item) (it Iterator, exactlyEqual bool) {
+
+	n, exact := root.findGE(key)
+	if exact {
+		return Iterator{root, n}, true
+	}
+	if n != nil {
+		return Iterator{root, n.doPrev()}, false
+	}
+	if root.maxNode == nil {
+		return Iterator{root, negativeLimitNode}, false
+	}
+	return Iterator{root, root.maxNode}, false
 }
 
 func getGU(n *node) (grandparent, uncle *node) {

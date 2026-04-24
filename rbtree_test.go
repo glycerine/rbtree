@@ -70,6 +70,22 @@ func TestFindLE(t *testing.T) {
 	testAssert(t, tree.FindLE(9).NegativeLimit(), "FindLE 9")
 }
 
+func TestFindLE_isEqual(t *testing.T) {
+	tree := testNewIntSet()
+	testAssert(t, tree.Insert(10), "Insert1")
+	testAssert(t, !tree.Insert(10), "Insert2")
+	testAssert(t, tree.Len() == 1, "len==1")
+	it, exact := tree.FindLE_isEqual(10)
+	testAssert(t, it.Item().(int) == 10, "FindLE 10")
+	testAssert(t, exact, "FindLE 10 exact true")
+	it, exact = tree.FindLE_isEqual(9)
+	testAssert(t, it.NegativeLimit(), "FindLE 9")
+	testAssert(t, !exact, "FindLE 9 exact false")
+	it, exact = tree.FindLE_isEqual(11)
+	testAssert(t, it.Item().(int) == 10, "FindLE 11")
+	testAssert(t, !exact, "FindLE 11 exact false")
+}
+
 func TestGet(t *testing.T) {
 	tree := testNewIntSet()
 	testAssert(t, tree.Insert(10), "insert1")
